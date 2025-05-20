@@ -58,9 +58,21 @@ app.get('/todos/:id', (req, res) => {
     res.json(todo);
 });
 
-// Your code here
+// Read-Opreation (GET /todos)
+// Gibt alle Todos zurück
 app.get('/todos', (req, res) => {
     res.json(TODOS);
+});
+
+//Delete-Operation (DELETE /todos/:id)
+app.delete('/todos/:id', (req, res) => {
+    const id = Number(req.params.id);
+    const index = TODOS.findIndex(t => t._id === id);
+    if (index === -1) {
+        return res.status(404).json({ error: 'ToDo nicht gefunden' });
+    }
+    TODOS.splice(index, 1);
+    res.status(204).send();
 });
 
 //app.listen(3000);
