@@ -1,7 +1,9 @@
 import express from 'express';
 
 /** Zentrales Objekt für unsere Express-Applikation */
+//const express = require('express')
 const app = express();
+const port = 3000
 
 /**
  * Liste aller ToDos. 
@@ -28,8 +30,40 @@ let TODOS = [
     }
 ];
 
+app.use(express.json()); // Middleware, um JSON-Body zu parsen
+
+// Create-Operation (POST /todos)
+app.post('/todos', (req, res) => {
+    const { title, due, status } = req.body;
+    if (!title || !due || typeof status !== 'number') {
+        return res.status(400).json({ error: 'Ungültige ToDo-Daten' });
+    }
+    const newTodo = {
+        _id: Date.now(),
+        title,
+        due,
+        status
+    };
+    TODOS.push(newTodo);
+    res.status(201).json(newTodo);
+});
+
+// Read-Operation (GET /todos/:id)
+app.get('/todos/:id', (req, res) => {
+    const id = Number(req.params.id);
+    const todo = TODOS.find(t => t._id === id);
+    if (!todo) {
+        return res.status(404).json({ error: 'ToDo nicht gefunden' });
+    }
+    res.json(todo);
+});
+
 // Your code here
 app.get('/todos', (req, res) => {
     res.json(TODOS);
 });
-app.listen(3000);
+
+//app.listen(3000);
+app.listen(port, () => {
+    console.log(`TODO APP JB listening on port ${port}`)
+})
